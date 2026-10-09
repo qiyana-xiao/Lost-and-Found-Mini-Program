@@ -1,0 +1,12 @@
+# 依赖与构建产物
+node_modules/
+dist/
+build/
+.cache/
+*.tsbuildinfo
+
+# 压缩包
+*.zip
+
+# 小程序私有配置（含个人 appid 等，勿提交）
+project.private.config.json

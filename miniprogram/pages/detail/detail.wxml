@@ -1,0 +1,80 @@
+<!-- pages/detail/detail.wxml -->
+<view class="page" wx:if="{{!loading && item}}">
+  <swiper wx:if="{{item.images.length > 0}}" class="swiper" indicator-dots autoplay circular indicator-active-color="#4A90E2">
+    <swiper-item wx:for="{{item.images}}" wx:key="*this">
+      <image wx:if="{{!brokenMap[index]}}" class="slide" src="{{item}}" mode="aspectFill" bindtap="onImageTap" data-src="{{item}}" binderror="onImageError" data-idx="{{index}}" />
+      <view wx:else class="slide slide-ph">🖼️</view>
+    </swiper-item>
+  </swiper>
+  <view wx:else class="swiper swiper-ph">{{item.emoji}}</view>
+
+  <view class="card info">
+    <view class="info-top">
+      <text class="info-title">{{item.title}}</text>
+      <text class="badge {{item.statusClass}}">{{item.statusLabel}}</text>
+    </view>
+    <view class="info-tags">
+      <text class="tag {{item.typeClass}}">{{item.typeLabel}}</text>
+      <text class="cat-chip">{{item.category}}</text>
+    </view>
+    <view class="info-row"><text class="row-label">地点</text><text class="row-val">{{item.location}}</text></view>
+    <view class="info-row"><text class="row-label">时间</text><text class="row-val">{{item.happenTimeText}}</text></view>
+    <view class="info-row"><text class="row-label">浏览</text><text class="row-val">{{item.viewText}} 次</text></view>
+    <view class="info-desc" wx:if="{{item.description}}">{{item.description}}</view>
+  </view>
+
+  <view class="card contact" bindtap="onCopyContact">
+    <text class="row-label">联系方式</text>
+    <text class="contact-val">{{item.contactMasked}}</text>
+    <text class="copy-hint">点击复制</text>
+  </view>
+
+  <view class="card msgs">
+    <view class="msgs-title">留言（{{messages.length}}）</view>
+    <view wx:if="{{messages.length === 0}}" class="msgs-empty">还没有留言，快来抢沙发~</view>
+    <view wx:for="{{messages}}" wx:key="_id" class="msg">
+      <view class="msg-content">{{item.content}}</view>
+      <view class="msg-foot">
+        <text wx:if="{{item.contact}}" class="msg-contact">联系方式：{{item.contact}}</text>
+        <text class="msg-time">{{item.timeText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-gap"></view>
+</view>
+
+<view wx:if="{{!loading && !item}}" class="empty">
+  <view class="empty-emoji">😕</view>
+  <text>条目不存在或已被删除</text>
+</view>
+
+<view wx:if="{{loading}}" class="empty">
+  <view class="empty-emoji">⏳</view>
+  <text>加载中...</text>
+</view>
+
+<!-- 底部操作栏：非所有者 -->
+<view class="footer safe-bottom" wx:if="{{!loading && item && !isOwner}}">
+  <button class="btn-primary msg-btn" bindtap="onShowMsg">留言</button>
+</view>
+
+<!-- 底部操作栏：所有者 -->
+<view class="footer safe-bottom" wx:if="{{!loading && item && isOwner}}">
+  <button wx:if="{{item.status === 'open'}}" class="btn-primary close-btn" bindtap="onClose">标记为已认领</button>
+  <view wx:else class="closed-tip">该条目已认领，流程已完成</view>
+</view>
+
+<!-- 留言弹窗 -->
+<view class="modal" wx:if="{{showMsgModal}}">
+  <view class="modal-mask" bindtap="onHideMsg"></view>
+  <view class="modal-content">
+    <view class="modal-title">留言</view>
+    <input class="modal-input" placeholder="联系方式（选填）" value="{{modalContact}}" bindinput="onModalContactInput" maxlength="20" />
+    <textarea class="modal-textarea" placeholder="我捡到了 / 这是我的…" value="{{modalContent}}" bindinput="onModalContentInput" maxlength="200" />
+    <view class="modal-actions">
+      <view class="modal-cancel" bindtap="onHideMsg">取消</view>
+      <view class="modal-confirm" bindtap="onSubmitMessage">提交</view>
+    </view>
+  </view>
+</view>

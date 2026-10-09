@@ -1,0 +1,76 @@
+<!-- pages/index/index.wxml -->
+<view class="page">
+  <view class="topbar">
+    <view class="search-bar" bindtap="onSearchTap">
+      <view class="search-box">
+        <text class="search-icon">🔍</text>
+        <text class="search-ph">搜索失物 / 招领</text>
+      </view>
+    </view>
+
+    <view class="tabs">
+      <view
+        wx:for="{{tabs}}"
+        wx:key="key"
+        class="tab {{activeTab === item.key ? 'tab-active' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="onTabChange"
+      >{{item.label}}</view>
+    </view>
+
+    <scroll-view class="cats" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="cats-inner">
+        <view class="cat {{activeCategory === '' ? 'cat-active' : ''}}" data-key="" bindtap="onCategoryChange">全部</view>
+        <view
+          wx:for="{{categories}}"
+          wx:key="*this"
+          class="cat {{activeCategory === item ? 'cat-active' : ''}}"
+          data-key="{{item}}"
+          bindtap="onCategoryChange"
+        >{{item}}</view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="list">
+    <block wx:if="{{list.length > 0}}">
+      <view
+        class="card item"
+        wx:for="{{list}}"
+        wx:key="_id"
+        data-id="{{item._id}}"
+        bindtap="onCardTap"
+      >
+        <view class="item-cover">
+          <image wx:if="{{item.cover}}" class="cover-img" src="{{item.cover}}" mode="aspectFill" lazy-load data-index="{{index}}" binderror="onCoverError" />
+          <view wx:else class="cover-ph">{{item.emoji}}</view>
+        </view>
+        <view class="item-body">
+          <view class="item-top">
+            <text class="item-title">{{item.title}}</text>
+            <text class="badge {{item.statusClass}}">{{item.statusLabel}}</text>
+          </view>
+          <view class="item-tags">
+            <text class="tag {{item.typeClass}}">{{item.typeLabel}}</text>
+            <text class="cat-chip">{{item.category}}</text>
+          </view>
+          <view class="item-meta">📍 {{item.location}}</view>
+          <view class="item-foot">
+            <text class="meta-item">🕒 {{item.createdAtRel}}</text>
+            <text class="meta-item">👁 {{item.viewText}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <view wx:elif="{{!loading}}" class="empty">
+      <view class="empty-emoji">📭</view>
+      <text>暂无相关条目，去发布一条吧</text>
+    </view>
+  </view>
+
+  <view wx:if="{{loading && list.length > 0}}" class="loading-more">加载中...</view>
+  <view wx:if="{{finished && list.length > 0}}" class="loading-more">没有更多了</view>
+
+  <view class="fab" bindtap="onPublishTap">＋</view>
+</view>

@@ -1,0 +1,9 @@
+{
+  "name": "closeItem",
+  "version": "1.0.0",
+  "description": "标记条目已认领",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

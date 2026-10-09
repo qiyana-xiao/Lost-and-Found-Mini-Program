@@ -1,0 +1,110 @@
+<!--pages/mine/mine.wxml-->
+<view class="page">
+  <!-- 个人中心头部 -->
+  <view class="profile">
+    <view class="avatar-wrap" bindtap="onEditAvatar">
+      <image wx:if="{{avatar}}" class="avatar-img" src="{{avatar}}" mode="aspectFill" />
+      <view wx:else class="avatar">{{avatarText}}</view>
+      <view class="avatar-cam">📷</view>
+    </view>
+    <view class="pinfo">
+      <view class="nick" bindtap="onEditNick">{{nickname}} <text class="edit-ic">✎</text></view>
+      <view class="uid">ID: {{shortUid}}</view>
+    </view>
+  </view>
+
+  <!-- 未登录：仅提示登录 -->
+  <block wx:if="{{isGuest}}">
+    <view class="guest-empty">
+      <view class="lock-emoji">🔒</view>
+      <view class="guest-text">登录后即可查看我的发布</view>
+      <view class="guest-btn" hover-class="guest-btn-hover" bindtap="onGoLogin">登录 / 注册</view>
+    </view>
+  </block>
+
+  <!-- 已登录：统计、操作、我的发布 -->
+  <block wx:else>
+    <!-- 留言消息提醒：有其他用户在你的条目下留言时显示 -->
+    <view class="msg-bell" wx:if="{{unreadTotal > 0}}">
+      <view class="bell-head">
+        <text class="bell-title">🔔 消息提醒</text>
+        <text class="bell-count">你有 {{unreadTotal}} 条新留言</text>
+      </view>
+      <view
+        class="bell-item"
+        wx:for="{{unreadList}}"
+        wx:key="itemId"
+        data-id="{{item.itemId}}"
+        bindtap="onUnreadTap"
+        hover-class="bell-item-hover"
+      >
+        <view class="bell-dot"></view>
+        <view class="bell-body">
+          <view class="bell-item-title">{{item.title}}</view>
+          <view class="bell-item-msg">{{item.latestContent}}</view>
+        </view>
+        <view class="bell-right">
+          <text class="bell-badge">{{item.count}}</text>
+          <text class="bell-time">{{item.timeText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 统计 -->
+    <view class="stats">
+      <view class="stat {{filter === 'all' ? 'stat-active' : ''}}" data-key="all" bindtap="onStatTap">
+        <view class="num">{{stats.total}}</view>
+        <view class="lbl">发布</view>
+      </view>
+      <view class="stat {{filter === 'closed' ? 'stat-active' : ''}}" data-key="closed" bindtap="onStatTap">
+        <view class="num">{{stats.closed}}</view>
+        <view class="lbl">已认领</view>
+      </view>
+      <view class="stat {{filter === 'lost' ? 'stat-active' : ''}}" data-key="lost" bindtap="onStatTap">
+        <view class="num lost">{{stats.lost}}</view>
+        <view class="lbl">失物</view>
+      </view>
+      <view class="stat {{filter === 'found' ? 'stat-active' : ''}}" data-key="found" bindtap="onStatTap">
+        <view class="num found">{{stats.found}}</view>
+        <view class="lbl">招领</view>
+      </view>
+    </view>
+
+    <!-- 账号操作 -->
+    <view class="op-row">
+      <view class="op-btn" bindtap="onEditNick">修改昵称</view>
+      <view class="op-sep"></view>
+      <view class="op-btn" bindtap="onEditAvatar">修改头像</view>
+      <view class="op-sep"></view>
+      <view class="op-btn op-danger" bindtap="onLogout">退出登录</view>
+    </view>
+
+    <!-- 我的发布 -->
+    <view class="sec-title">{{filterLabel}}</view>
+    <block wx:if="{{list.length > 0}}">
+      <view class="item mitem" wx:for="{{list}}" wx:key="_id" data-id="{{item._id}}" bindtap="onCardTap">
+        <view class="mi-cover">
+          <image wx:if="{{item.cover}}" class="mi-img" src="{{item.cover}}" mode="aspectFill" data-index="{{index}}" binderror="onCoverError" />
+          <view wx:else class="mi-ph">{{item.emoji}}</view>
+        </view>
+        <view class="mi-body">
+          <view class="mi-top">
+            <text class="mi-title">{{item.title}}</text>
+            <text class="badge {{item.statusClass}}">{{item.statusLabel}}</text>
+          </view>
+          <view class="mi-meta">{{item.typeLabel}} · {{item.category}} · {{item.createdAtText}}</view>
+        </view>
+        <view class="mi-actions">
+          <view wx:if="{{item.status === 'open'}}" class="mi-btn mi-ok" data-id="{{item._id}}" catchtap="onMarkClosed">标记认领</view>
+          <view class="mi-btn" data-id="{{item._id}}" catchtap="onEdit">编辑</view>
+          <view class="mi-btn mi-del" data-id="{{item._id}}" catchtap="onDelete">删除</view>
+        </view>
+      </view>
+    </block>
+    <view wx:else class="empty">
+      <view class="empty-emoji">📭</view>
+      <view class="empty-text">{{emptyText}}</view>
+      <view class="empty-btn" bindtap="onGoPublish">去发布</view>
+    </view>
+  </block>
+</view>

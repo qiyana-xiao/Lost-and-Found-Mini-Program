@@ -1,0 +1,70 @@
+<!--pages/messages/messages.wxml-->
+<view class="page">
+  <!-- 未登录 -->
+  <block wx:if="{{isGuest}}">
+    <view class="guest-empty">
+      <view class="guest-emoji">🔒</view>
+      <view class="guest-text">登录后即可查看收到的留言</view>
+      <view class="guest-btn" hover-class="guest-btn-hover" bindtap="onGoLogin">登录 / 注册</view>
+    </view>
+  </block>
+
+  <!-- 已登录 -->
+  <block wx:else>
+    <!-- 头部 -->
+    <view class="msg-header">
+      <view class="msg-title-wrap">
+        <text class="msg-main-title">消息中心</text>
+        <text class="msg-sub-title" wx:if="{{unreadTotal > 0}}">您有 {{unreadTotal}} 条未读留言</text>
+        <text class="msg-sub-title" wx:else>收到的留言都会显示在这里</text>
+      </view>
+      <view class="msg-readall {{unreadTotal === 0 ? 'msg-readall-disabled' : ''}}" bindtap="onMarkAll">
+        全部已读
+      </view>
+    </view>
+
+    <!-- 消息列表 -->
+    <view class="msg-list" wx:if="{{list.length > 0}}">
+      <view
+        class="msg-card {{item.unreadCount > 0 ? 'msg-card-unread' : ''}}"
+        wx:for="{{list}}"
+        wx:key="itemId"
+        data-id="{{item.itemId}}"
+        bindtap="onItemTap"
+        hover-class="msg-card-hover"
+      >
+        <view class="msg-card-left">
+          <view class="msg-avatar">
+            <text class="msg-avatar-icon">💬</text>
+          </view>
+          <view class="msg-unread-strip" wx:if="{{item.unreadCount > 0}}"></view>
+        </view>
+        <view class="msg-card-body">
+          <view class="msg-card-top">
+            <text class="msg-card-name">{{item.title}}</text>
+            <text class="msg-card-time">{{item.timeText}}</text>
+          </view>
+          <view class="msg-card-content">
+            <text class="msg-card-badge" wx:if="{{item.unreadCount > 0}}">{{item.unreadCount}}</text>
+            <text class="msg-card-text {{item.unreadCount > 0 ? 'msg-card-text-unread' : ''}}">{{item.latestContent}}</text>
+          </view>
+          <view class="msg-card-foot">
+            <text class="msg-card-count">共 {{item.count}} 条留言</text>
+            <text class="msg-card-contact" wx:if="{{item.latestContact}}">联系方式 {{item.latestContact}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty" wx:else>
+      <view class="empty-icon-wrap">
+        <view class="empty-icon-circle">
+          <text class="empty-emoji">✉️</text>
+        </view>
+      </view>
+      <view class="empty-text">还没有收到任何留言</view>
+      <view class="empty-tip">当有用户在你的发布下留言时，会显示在这里</view>
+    </view>
+  </block>
+</view>
