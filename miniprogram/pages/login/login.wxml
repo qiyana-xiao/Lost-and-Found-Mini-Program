@@ -1,0 +1,21 @@
+<!--pages/login/login.wxml-->
+<view class="page">
+  <view class="login-card">
+    <view class="auth-tabs">
+      <view class="auth-tab {{authMode === 'login' ? 'auth-tab-active' : ''}}" data-mode="login" bindtap="onSwitchMode">登录</view>
+      <view class="auth-tab {{authMode === 'register' ? 'auth-tab-active' : ''}}" data-mode="register" bindtap="onSwitchMode">注册</view>
+    </view>
+    <input class="auth-input" placeholder="用户名（2-20 个字符）" placeholder-class="auth-ph" value="{{inputUsername}}" bindinput="onUsernameInput" maxlength="20" />
+    <input class="auth-input" placeholder="密码（至少 6 位）" placeholder-class="auth-ph" password value="{{inputPassword}}" bindinput="onPasswordInput" maxlength="20" />
+    <input wx:if="{{authMode === 'register'}}" class="auth-input" placeholder="昵称（选填，默认同用户名）" placeholder-class="auth-ph" value="{{inputNickname}}" bindinput="onNicknameInput" maxlength="20" />
+    <view class="auth-btn {{submitting ? 'auth-btn-disabled' : ''}}" hover-class="{{submitting ? '' : 'auth-btn-hover'}}" bindtap="onSubmitAuth">
+      {{submitting ? '处理中…' : (authMode === 'login' ? '登录' : '注册并登录')}}
+    </view>
+    <view class="auth-tip">演示版：账号仅保存在本机，切换身份后“我的发布”随之切换</view>
+  </view>
+
+  <view class="login-hint">
+    <view class="hint-emoji">🔒</view>
+    <view class="hint-text">登录后即可查看我的发布、发布失物招领</view>
+  </view>
+</view>

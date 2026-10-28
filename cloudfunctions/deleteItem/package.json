@@ -1,0 +1,9 @@
+{
+  "name": "deleteItem",
+  "version": "1.0.0",
+  "description": "删除失物招领条目",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

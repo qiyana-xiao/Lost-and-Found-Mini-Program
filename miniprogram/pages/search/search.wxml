@@ -1,0 +1,114 @@
+<!--pages/search/search.wxml-->
+<view class="page">
+  <!-- 渐变头部：搜索框 + 类型快筛（常驻，不占内容区） -->
+  <view class="search-head">
+    <view class="deco deco-1"></view>
+    <view class="deco deco-2"></view>
+    <view class="search-row">
+      <view class="input-wrap">
+        <text class="input-icon">🔍</text>
+        <input
+          class="search-input"
+          placeholder="搜索标题 / 地点 / 描述"
+          placeholder-class="input-ph"
+          value="{{keyword}}"
+          confirm-type="search"
+          bindinput="onKeywordInput"
+          bindconfirm="onSearch"
+        />
+        <text wx:if="{{keyword}}" class="input-clear" catchtap="onClearKeyword">×</text>
+      </view>
+      <view class="search-go" bindtap="onSearch">搜索</view>
+    </view>
+    <!-- 类型快筛：全部 / 寻物 / 招领，点按即搜 -->
+    <view class="type-seg">
+      <view class="seg-item {{activeType === '' ? 'seg-active' : ''}}" data-key="" bindtap="onTypeChange">全部</view>
+      <view class="seg-item {{activeType === 'lost' ? 'seg-active' : ''}}" data-key="lost" bindtap="onTypeChange">寻物</view>
+      <view class="seg-item {{activeType === 'found' ? 'seg-active' : ''}}" data-key="found" bindtap="onTypeChange">招领</view>
+    </view>
+  </view>
+
+  <view class="content">
+    <!-- 搜索结果 -->
+    <block wx:if="{{searched}}">
+      <!-- 分类二次筛选：仅有结果且存在多个分类时显示，单行横向滑动 -->
+      <scroll-view wx:if="{{resultCategories.length > 1}}" class="cats" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="cats-inner">
+          <view class="cat {{activeCategory === '' ? 'cat-active' : ''}}" data-key="" bindtap="onCategoryChange">全部</view>
+          <view
+            class="cat {{activeCategory === item ? 'cat-active' : ''}}"
+            wx:for="{{resultCategories}}"
+            wx:key="*this"
+            data-key="{{item}}"
+            bindtap="onCategoryChange"
+          >{{item}}</view>
+        </view>
+      </scroll-view>
+
+      <view class="result-bar">
+        共 <text class="result-num">{{total}}</text> 条结果
+        <text wx:if="{{keyword}}" class="result-kw">“{{keyword}}”</text>
+        <text wx:if="{{activeType}}" class="result-kw">· {{activeType === 'lost' ? '寻物' : '招领'}}</text>
+        <text wx:if="{{activeCategory}}" class="result-kw">· {{activeCategory}}</text>
+      </view>
+
+      <view class="list" wx:if="{{list.length > 0}}">
+        <view class="item" wx:for="{{list}}" wx:key="_id" data-id="{{item._id}}" bindtap="onCardTap" hover-class="item-hover">
+          <view class="item-cover">
+            <image wx:if="{{item.cover}}" class="cover-img" src="{{item.cover}}" mode="aspectFill" data-index="{{index}}" binderror="onCoverError" />
+            <view wx:else class="cover-ph">{{item.emoji}}</view>
+          </view>
+          <view class="item-body">
+            <view class="item-top">
+              <text class="item-title"><text wx:for="{{item.titleParts}}" wx:for-item="part" class="{{part.hit ? 'hl' : ''}}">{{part.text}}</text></text>
+              <text class="badge {{item.statusClass}}">{{item.statusLabel}}</text>
+            </view>
+            <view class="item-tags">
+              <text class="tag {{item.typeClass}}">{{item.typeLabel}}</text>
+              <text class="cat-chip">{{item.category}}</text>
+            </view>
+            <view class="item-meta">📍 <text wx:for="{{item.locParts}}" wx:for-item="part" class="{{part.hit ? 'hl' : ''}}">{{part.text}}</text></view>
+            <view class="item-foot">
+              <text class="meta-item">🕒 {{item.createdAtRel}}</text>
+              <text class="meta-item">👁 {{item.viewText}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view wx:else class="empty">
+        <view class="empty-emoji">🔍</view>
+        <view class="empty-text">没有找到相关条目，换个关键词试试</view>
+      </view>
+    </block>
+
+    <!-- 初始引导：搜索历史 + 热门搜索 -->
+    <block wx:else>
+      <view class="section" wx:if="{{history.length > 0}}">
+        <view class="sec-head">
+          <text class="sec-title">搜索历史</text>
+          <text class="sec-clear" bindtap="onClearHistory">清空</text>
+        </view>
+        <view class="chips">
+          <view class="chip" wx:for="{{history}}" wx:key="*this" data-kw="{{item}}" bindtap="onKeywordTap" hover-class="chip-hover">{{item}}</view>
+        </view>
+      </view>
+
+      <view class="section">
+        <view class="sec-head">
+          <text class="sec-title">热门搜索</text>
+          <text class="sec-sub">点按即搜</text>
+        </view>
+        <view class="chips">
+          <view class="chip chip-hot" wx:for="{{hot}}" wx:key="*this" data-kw="{{item}}" bindtap="onKeywordTap" hover-class="chip-hover">
+            <text class="hot-rank {{index < 3 ? 'hot-rank-top' : ''}}">{{index + 1}}</text>{{item}}
+          </view>
+        </view>
+      </view>
+
+      <view class="empty">
+        <view class="empty-emoji">💡</view>
+        <view class="empty-text">输入关键词开始搜索</view>
+      </view>
+    </block>
+  </view>
+</view>

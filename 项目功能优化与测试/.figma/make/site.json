@@ -1,0 +1,10 @@
+{
+  "description": "This web application streamlines document analysis and revision, enabling users to optimize content efficiently while ensuring reliability and feasibility.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
